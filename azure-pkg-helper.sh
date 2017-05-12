@@ -49,7 +49,7 @@ OPT_VERBOSE=0
 OPT_ZIPGEN=0
 
 REMOVE_ARGS=0
-while getopts "hd:pv" opt ; do
+while getopts "d:hpsvz" opt ; do
     case "$opt" in
 	d) OPT_AZURE_DIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
         h) usage ;;
