@@ -34,10 +34,10 @@ function usage() {
 
      -d             path to Azure SDK for Python (required)
      -h             show this help message
-     -p		    print package information
-     -s		    generate spec files for RPM
+     -p             print package information
+     -s             generate spec files for RPM
      -v             verbose
-     -z		    generate ZIP source archives
+     -z             generate ZIP source archives
 
 EOF
   exit 0;
