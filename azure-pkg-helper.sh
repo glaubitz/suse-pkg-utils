@@ -94,6 +94,10 @@ if [ $1 ] && [ -d $1 ] ; then
 		echo -e "$(echo "$REQUIRES" | sed -e 's/\(.*\)/\t\t\1/g')\n"
 	    fi
 
+	    if [ $OPT_ZIPGEN == "1" ] || [ $OPT_SPECGEN == "1" ] ; then
+		mkdir $TARGET/python-$PACKAGE
+	    fi
+
 	    if [ $OPT_SPECGEN == "1" ] ; then
 		echo "Writing python-$PACKAGE.spec ..."
 	    fi
