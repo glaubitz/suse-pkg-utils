@@ -101,6 +101,65 @@ if [ $1 ] && [ -d $1 ] ; then
 
 	    if [ $OPT_SPECGEN == "1" ] ; then
 		echo "Writing python-$PACKAGE.spec ..."
+		cat > $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
+#
+# spec file for package python-$PACKAGE
+#
+# Copyright (c) 2017 SUSE LINUX GmbH, Nuernberg, Germany.
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
+#
+
+%{?!python_module:%define python_module() python-%{**} python3-%{**}}
+Name:           python-$PACKAGE
+Version:        $VERSION
+Release:        0
+Summary:        $SUMMARY
+License:        $LICENSE
+Group:          Development/Languages/Python
+Url:            https://github.com/Azure/azure-sdk-for-python
+Source:         https://pypi.io/packages/source/a/$PACKAGE/$PACKAGE-%{version}.zip
+Source1:        LICENSE.txt
+BuildRequires:  %{python_module devel}
+BuildRequires:  %{python_module setuptools}
+BuildRequires:  python-rpm-macros
+BuildRequires:  unzip
+
+Conflicts:      python-azure-sdk <= 2.0.0
+
+BuildArch:      noarch
+
+%python_subpackages
+
+%description
+$DESCRIPTION
+
+%prep
+%setup -q -n $PACKAGE-%{version}
+
+%build
+install -m 644 %{SOURCE1} %{_builddir}/$PACKAGE-%{version}
+%python_build
+
+%install
+%python_install
+
+%files %{python_files}
+%defattr(-,root,root,-)
+%doc LICENSE.txt README.rst
+%{python_sitelib}/*
+
+%changelog
+EOF
 	    fi
 
 	    if [ $OPT_ZIPGEN == "1" ] ; then
