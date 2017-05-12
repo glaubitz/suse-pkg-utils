@@ -172,7 +172,7 @@ EOF
     done
 
     if [ $OPT_ZIPGEN == "1" ] || [ $OPT_SPECGEN == "1" ] ; then
-	echo "Result in :"$TARGET
+	echo "Result in: "$TARGET
     fi
 else
     usage
