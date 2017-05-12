@@ -79,6 +79,7 @@ if [ $1 ] && [ -d $1 ] ; then
 	    fi
 	    LICENSE=$(grep license= $SETUPFILE |sed -e "s/.*license\='\(.*\)',/\1/g")
 	    DESCRIPTION=$(sed -n -r -e '/^This\sis\sthe/,/(^This\spackage\s\has\sbeen\stested|^All\spackages|^This\spackage\sprovides|^It\sprovides)/p' $PACKAGE/README.rst)
+	    SUMMARY=$(echo "$DESCRIPTION" | head -n1 | sed -e 's/.*\(Microsoft.*\)\./\1/g')
 	    REQUIRES=$(sed -n -r -e '/.*install_requires=.*/,/.*\],.*/p' $PACKAGE/setup.py | sed -n -r -e "s/.*'([A-Z,a-z,0-9,-]*(=|~=)?.*)',/\1/pg")
 
 	    if [ $OPT_PRINT == "1" ] ; then
@@ -86,7 +87,7 @@ if [ $1 ] && [ -d $1 ] ; then
 		echo -e "Source:\t\t"$PACKAGE-$VERSION.zip
 		echo -e "Version:\t"$VERSION
 		echo -e "License:\t"$LICENSE
-		echo -e "Summary:\t"$(echo "$DESCRIPTION" | head -n1 | sed -e 's/.*\(Microsoft.*\)\./\1/g')
+		echo -e "Summary:\t"$SUMMARY
 		echo -e "Description:\t"
 		echo "$(echo "$DESCRIPTION" | sed -e 's/\(.*\)/\t\t\1/g')"
 		echo -e "Dependencies:"
