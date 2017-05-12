@@ -30,8 +30,9 @@
 function usage() {
   cat <<EOF
 
-    azure-pkg-helper.sh [opt] <Path to Azure Python SDK>
+    azure-pkg-helper.sh [opt]
 
+     -d             path to Azure SDK for Python (required)
      -h             show this help message
      -p		    print package information
      -s		    generate spec files for RPM
@@ -48,8 +49,9 @@ OPT_VERBOSE=0
 OPT_ZIPGEN=0
 
 REMOVE_ARGS=0
-while getopts ":hpv:" opt ; do
+while getopts "hd:pv" opt ; do
     case "$opt" in
+	d) OPT_AZURE_DIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
         h) usage ;;
 	p) OPT_PRINT="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	s) OPT_SPECGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
@@ -59,9 +61,9 @@ while getopts ":hpv:" opt ; do
 done
 shift "$REMOVE_ARGS"
 
-if [ $1 ] && [ -d $1 ] ; then
+if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 
-    cd $1
+    cd $OPT_AZURE_DIR
 
     if [ $OPT_ZIPGEN == "1" ] || [ $OPT_SPECGEN == "1" ] ; then
 	TARGET=$(mktemp -d)
