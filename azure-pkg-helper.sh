@@ -137,7 +137,11 @@ BuildRequires:  %{python_module devel}
 BuildRequires:  %{python_module setuptools}
 BuildRequires:  python-rpm-macros
 BuildRequires:  unzip
-
+EOF
+		for i in $REQUIRES ; do
+		    echo -e "Requires:\tpython-$i" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		done
+		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
 Conflicts:      python-azure-sdk <= 2.0.0
 
 BuildArch:      noarch
