@@ -139,8 +139,8 @@ BuildRequires:  %{python_module setuptools}
 BuildRequires:  python-rpm-macros
 BuildRequires:  unzip
 EOF
-		IFS='\n' read -r -a REQUIRES_ARRAY <<< "$REQUIRES"
-		for i in "${REQUIRES_ARRAY[@]}" ; do
+		IFS=$'\n'
+		for i in $REQUIRES ; do
 		    echo -e "Requires:\tpython-$i" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 		done
 		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
