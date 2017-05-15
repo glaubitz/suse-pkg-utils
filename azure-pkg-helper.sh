@@ -85,7 +85,7 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 	    LICENSE=$(grep license= $SETUPFILE |sed -e "s/.*license\='\(.*\)',/\1/g")
 	    DESCRIPTION=$(sed -n -r -e '/^This\sis\sthe/,/(^This\spackage\s\has\sbeen\stested|^All\spackages|^This\spackage\sprovides|^It\sprovides)/p' $PACKAGE/README.rst)
 	    SUMMARY=$(echo "$DESCRIPTION" | head -n1 | sed -e 's/.*\(Microsoft.*\)\./\1/g')
-	    REQUIRES=$(sed -n -r -e '/.*install_requires=.*/,/.*\],.*/p' $PACKAGE/setup.py | sed -n -r -e "s/.*'([A-Z,a-z,0-9,-]*)(\[.*\])?((=|~=)?.*)',/\1\3/pg" | sed -e 's/~=/>=/g')
+	    REQUIRES=$(sed -n -r -e '/.*install_requires=.*/,/.*\],.*/p' $PACKAGE/setup.py | sed -n -r -e "s/.*'([A-Z,a-z,0-9,-]*)(\[.*\])?(=|~=)?(.*)',/\1 \3 \4/pg" | sed -e 's/~=/>=/g')
 
 	    if [ $OPT_PRINT == "1" ] ; then
 		echo -e "Package:\t"$PACKAGE
