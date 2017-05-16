@@ -36,6 +36,7 @@ function usage() {
      -h             show this help message
      -l             generate LICENSE files for RPM
      -p             print package information
+     -r             relax version dependencies (== -> >=)
      -s             generate spec files for RPM
      -v             verbose
      -z             generate ZIP source archives
@@ -46,17 +47,19 @@ EOF
 
 OPT_LICENSEGEN=0
 OPT_PRINT=0
+OPT_RELAX=0
 OPT_SPECGEN=0
 OPT_VERBOSE=0
 OPT_ZIPGEN=0
 
 REMOVE_ARGS=0
-while getopts "d:hlpsvz" opt ; do
+while getopts "d:hlprsvz" opt ; do
     case "$opt" in
 	d) OPT_AZURE_DIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
         h) usage ;;
 	l) OPT_LICENSEGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	p) OPT_PRINT="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
+	r) OPT_RELAX="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	s) OPT_SPECGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
         v) OPT_VERBOSE="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	z) OPT_ZIPGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
@@ -86,6 +89,10 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 	    DESCRIPTION=$(sed -n -r -e '/^This\sis\sthe/,/(^This\spackage\s\has\sbeen\stested|^All\spackages|^This\spackage\sprovides|^It\sprovides)/p' $PACKAGE/README.rst)
 	    SUMMARY=$(echo "$DESCRIPTION" | head -n1 | sed -e 's/.*\(Microsoft.*\)\./\1/g')
 	    REQUIRES=$(sed -n -r -e '/.*install_requires=.*/,/.*\],.*/p' $PACKAGE/setup.py | sed -n -r -e "s/.*'([A-Z,a-z,0-9,-]*)(\[[A-Z,a-z]*\])?(>=|==|~=)?([A-Z,a-z,0-9,\.]*)?',/\1 \3 \4/pg" | sed -e 's/~=/>=/g')
+
+	    if [ $OPT_RELAX == "1" ] ; then
+		REQUIRES=$(echo "$REQUIRES" | sed -e 's/==/>=/g')
+	    fi
 
 	    if [ $OPT_PRINT == "1" ] ; then
 		echo -e "Package:\t"$PACKAGE
