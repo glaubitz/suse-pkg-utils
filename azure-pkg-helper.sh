@@ -56,12 +56,12 @@ REMOVE_ARGS=0
 while getopts "d:hlprsvz" opt ; do
     case "$opt" in
 	d) OPT_AZURE_DIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
-        h) usage ;;
+	h) usage ;;
 	l) OPT_LICENSEGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	p) OPT_PRINT="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	r) OPT_RELAX="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	s) OPT_SPECGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
-        v) OPT_VERBOSE="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
+	v) OPT_VERBOSE="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	z) OPT_ZIPGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
     esac
 done
