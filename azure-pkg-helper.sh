@@ -34,8 +34,8 @@ function usage() {
 
      -d             path to Azure SDK for Python (required)
      -h             show this help message
+     -i             print package information
      -l             generate LICENSE files for RPM
-     -p             print package information
      -r             relax version dependencies (== -> >=)
      -s             generate spec files for RPM
      -v             verbose
@@ -46,19 +46,19 @@ EOF
 }
 
 OPT_LICENSEGEN=0
-OPT_PRINT=0
+OPT_INFO=0
 OPT_RELAX=0
 OPT_SPECGEN=0
 OPT_VERBOSE=0
 OPT_ZIPGEN=0
 
 REMOVE_ARGS=0
-while getopts "d:hlprsvz" opt ; do
+while getopts "d:hilrsvz" opt ; do
     case "$opt" in
 	d) OPT_AZURE_DIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
 	h) usage ;;
+	i) OPT_INFO="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	l) OPT_LICENSEGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
-	p) OPT_PRINT="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	r) OPT_RELAX="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	s) OPT_SPECGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	v) OPT_VERBOSE="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
@@ -94,7 +94,7 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 		REQUIRES=$(echo "$REQUIRES" | sed -e 's/==/>=/g')
 	    fi
 
-	    if [ $OPT_PRINT == "1" ] ; then
+	    if [ $OPT_INFO == "1" ] ; then
 		echo -e "Package:\t"$PACKAGE
 		echo -e "Source:\t\t"$PACKAGE-$VERSION.zip
 		echo -e "Version:\t"$VERSION
