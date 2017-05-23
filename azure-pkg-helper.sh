@@ -36,6 +36,7 @@ function usage() {
      -h             show this help message
      -i             print package information
      -l             generate LICENSE files for RPM
+     -p             specify package to work with
      -r             relax version dependencies (== -> >=)
      -s             generate spec files for RPM
      -v             verbose
@@ -47,18 +48,20 @@ EOF
 
 OPT_LICENSEGEN=0
 OPT_INFO=0
+OPT_PACKAGE="azure*"
 OPT_RELAX=0
 OPT_SPECGEN=0
 OPT_VERBOSE=0
 OPT_ZIPGEN=0
 
 REMOVE_ARGS=0
-while getopts "d:hilrsvz" opt ; do
+while getopts "d:hilp:rsvz" opt ; do
     case "$opt" in
 	d) OPT_AZURE_DIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
 	h) usage ;;
 	i) OPT_INFO="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	l) OPT_LICENSEGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
+	p) OPT_PACKAGE="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
 	r) OPT_RELAX="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	s) OPT_SPECGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	v) OPT_VERBOSE="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
@@ -75,7 +78,7 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 	TARGET=$(mktemp -d)
     fi
 
-    for PACKAGE in azure* ; do
+    for PACKAGE in $OPT_PACKAGE ; do
 	if [ -d $PACKAGE ] ; then
 	    VERSIONFILE=$(find $PACKAGE -name version.py | sort | tail -n1)
 	    SETUPFILE=$PACKAGE/setup.py
