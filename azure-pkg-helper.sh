@@ -234,7 +234,8 @@ EOF
 
 	    if [ $OPT_ZIPGEN == "1" ] ; then
 		echo "Generating $PACKAGE-$VERSION.zip ..."
-		zip -q -r $TARGET/python-$PACKAGE/$PACKAGE-$VERSION.zip $PACKAGE
+		ln -s $PACKAGE $PACKAGE-$VERSION
+		zip -q -r $TARGET/python-$PACKAGE/$PACKAGE-$VERSION.zip $PACKAGE-$VERSION
 	    fi
 	fi
     done
