@@ -135,28 +135,28 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 #
 
 %{?!python_module:%define python_module() python-%{**} python3-%{**}}
-Name:           python-$PACKAGE
-Version:        $VERSION
-Release:        0
-Summary:        $SUMMARY
-License:        $LICENSE
-Group:          Development/Languages/Python
-Url:            https://github.com/Azure/azure-sdk-for-python
-Source:         https://pypi.io/packages/source/a/$PACKAGE/$PACKAGE-%{version}.zip
-Source1:        LICENSE.txt
-BuildRequires:  %{python_module devel}
-BuildRequires:  %{python_module setuptools}
-BuildRequires:  python-rpm-macros
-BuildRequires:  unzip
+Name:		python-$PACKAGE
+Version:	$VERSION
+Release:	0
+Summary:	$SUMMARY
+License:	$LICENSE
+Group:		Development/Languages/Python
+Url:		https://github.com/Azure/azure-sdk-for-python
+Source:		https://pypi.io/packages/source/a/$PACKAGE/$PACKAGE-%{version}.zip
+Source1:	LICENSE.txt
+BuildRequires:	%{python_module devel}
+BuildRequires:	%{python_module setuptools}
+BuildRequires:	python-rpm-macros
+BuildRequires:	unzip
 EOF
 		IFS=$'\n'
 		for i in $REQUIRES ; do
 		    echo -e "Requires:\tpython-$i" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 		done
 		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
-Conflicts:      python-azure-sdk <= 2.0.0
+Conflicts:	python-azure-sdk <= 2.0.0
 
-BuildArch:      noarch
+BuildArch:	noarch
 
 %python_subpackages
 
