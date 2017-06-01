@@ -83,7 +83,7 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 	    VERSIONFILE=$(find $PACKAGE -name version.py | sort | tail -n1)
 	    SETUPFILE=$PACKAGE/setup.py
 	    if [ $VERSIONFILE ] ; then
-		VERSION=$(grep VERSION $VERSIONFILE | sed -e 's/VERSION\s*\=\s*\"\([A-Z,a-z,0-9,\.]*\)\"/\1/g')
+		VERSION=$(grep 'VERSION\|version' $VERSIONFILE | sed -e 's/.*[VERSION,version]\s*\=\s*\"\([A-Z,a-z,0-9,\.]*\)\"/\1/g')
 	    else
 		VERSIONFILE=$SETUPFILE
 		VERSION=$(grep version\= $SETUPFILE | sed -e "s/.*version\s*\=\s*'\([A-Z,a-z,0-9,\.]*\)'.*/\1/g")
