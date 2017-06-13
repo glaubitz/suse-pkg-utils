@@ -91,7 +91,7 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 	    LICENSE=$(grep license= $SETUPFILE |sed -e "s/.*license\='\(.*\)',/\1/g")
 	    DESCRIPTION=$(sed -n -r -e '/^This\sis\sthe/,/(^This\spackage\s\has\sbeen\stested|^All\spackages|^This\spackage\sprovides|^It\sprovides)/p' $PACKAGE/README.rst)
 	    SUMMARY=$(echo "$DESCRIPTION" | head -n1 | sed -e 's/.*\(Microsoft.*\)\./\1/g')
-	    REQUIRES=$(sed -n -r -e '/.*install_requires=.*/,/.*\],.*/p' $PACKAGE/setup.py | sed -n -r -e "s/.*[\x22,\x27]([A-Z,a-z,0-9,-]*)(\[[A-Z,a-z]*\])?(>=|==|~=)?([A-Z,a-z,0-9,\.]*)?[\x22,\x27],/\1 \3 \4/pg" | sed -e 's/~=/>=/g')
+	    REQUIRES=$(sed -n -r -e '/.*install_requires=.*/,/.*\],.*/p' $PACKAGE/setup.py | sed -n -r -e "s/.*[\x22,\x27]([A-Z,a-z,0-9,-]*)(\[[A-Z,a-z]*\])?(>=|==|~=)?([A-Z,a-z,0-9,\.]*)?[\x22,\x27],/\1 \3 \4/pg")
 
 	    if [ $OPT_RELAX == "1" ] ; then
 		REQUIRES=$(echo "$REQUIRES" | sed -e 's/==/>=/g')
@@ -151,7 +151,13 @@ BuildRequires:	unzip
 EOF
 		IFS=$'\n'
 		for i in $REQUIRES ; do
-		    echo -e "Requires:\tpython-$i" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		    if [ -n $(echo "$i" |grep -e '.*~=.*') ] ; then
+			CONFLICT_VERSION=$[$(echo $i | sed -e 's/.*~=\s\([0-9]*\)\..*/\1/g') + 1].0.0
+			echo -e "Requires:\tpython-$i" | sed -e 's/~=/>=/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo -e "Conflicts:\tpython-$i" | sed -r -e "s/~=\ [0-9,\.]*/>= $CONFLICT_VERSION/g" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		    else
+			echo -e "Requires:\tpython-$i" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		    fi
 		done
 		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
 Conflicts:	python-azure-sdk <= 2.0.0
