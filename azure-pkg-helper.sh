@@ -56,6 +56,8 @@ OPT_SPECGEN=0
 OPT_VERBOSE=0
 OPT_ZIPGEN=0
 
+PIPY_HOSTING_SRC=https://files.pythonhosted.org/packages/source
+
 REMOVE_ARGS=0
 while getopts "d:hilnp:rsvz" opt ; do
     case "$opt" in
@@ -104,6 +106,14 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 		REQUIRES=$(echo "$REQUIRES" | sed -e 's/==/>=/g')
 	    fi
 
+	    if curl --output /dev/null --silent --head --fail $PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.zip ; then
+		SOURCEURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-%{version}.zip"
+	    elif curl --output /dev/null --silent --head --fail $PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.tar.gz ; then
+		SOURCEURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-%{version}.tar.gz"
+	    else
+		echo "Error: Package $PACKAGE-$VERSION doesn't seem to exist on PyPI."
+	    fi
+
 	    if [ $OPT_INFO == "1" ] ; then
 		echo -e "Package:\t"$PACKAGE
 		echo -e "Source:\t\t"$PACKAGE-$VERSION.zip
@@ -149,7 +159,7 @@ Summary:	$SUMMARY
 License:	$LICENSE
 Group:		Development/Languages/Python
 Url:		https://github.com/Azure/azure-sdk-for-python
-Source:		https://pypi.io/packages/source/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-%{version}.zip
+Source:		$SOURCEURL
 Source1:	LICENSE.txt
 BuildRequires:	%{python_module devel}
 BuildRequires:	%{python_module setuptools}
