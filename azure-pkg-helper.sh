@@ -149,7 +149,7 @@ Summary:	$SUMMARY
 License:	$LICENSE
 Group:		Development/Languages/Python
 Url:		https://github.com/Azure/azure-sdk-for-python
-Source:		https://pypi.io/packages/source/a/$PACKAGE/$PACKAGE-%{version}.zip
+Source:		https://pypi.io/packages/source/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-%{version}.zip
 Source1:	LICENSE.txt
 BuildRequires:	%{python_module devel}
 BuildRequires:	%{python_module setuptools}
