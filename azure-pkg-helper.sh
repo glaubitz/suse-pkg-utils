@@ -33,6 +33,7 @@ function usage() {
     azure-pkg-helper.sh [opt]
 
      -d             path to Azure SDK for Python (required)
+     -f             fetch source package from PyPI
      -h             show this help message
      -i             print package information
      -l             generate LICENSE files for RPM
@@ -47,6 +48,7 @@ EOF
   exit 0;
 }
 
+OPT_FETCHSOURCE=0
 OPT_LICENSEGEN=0
 OPT_INFO=0
 OPT_NAMESPACEFILES=1
@@ -59,9 +61,10 @@ OPT_ZIPGEN=0
 PIPY_HOSTING_SRC=https://files.pythonhosted.org/packages/source
 
 REMOVE_ARGS=0
-while getopts "d:hilnp:rsvz" opt ; do
+while getopts "d:fhilnp:rsvz" opt ; do
     case "$opt" in
 	d) OPT_AZURE_DIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
+	f) OPT_FETCHSOURCE="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	h) usage ;;
 	i) OPT_INFO="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	l) OPT_LICENSEGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
@@ -108,8 +111,10 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 
 	    if curl --output /dev/null --silent --head --fail $PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.zip ; then
 		SOURCEURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-%{version}.zip"
+		FETCHURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.zip"
 	    elif curl --output /dev/null --silent --head --fail $PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.tar.gz ; then
 		SOURCEURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-%{version}.tar.gz"
+		FETCHURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.tar.gz"
 	    else
 		echo "Error: Package $PACKAGE-$VERSION doesn't seem to exist on PyPI."
 	    fi
@@ -127,8 +132,15 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 		echo -e "$(echo "$REQUIRES" | sed -e 's/\(.*\)/\t\t\1/g')\n"
 	    fi
 
-	    if [ $OPT_ZIPGEN == "1" ] || [ $OPT_SPECGEN == "1" ] ; then
+	    if [ $OPT_ZIPGEN == "1" ] || [ $OPT_SPECGEN == "1" ] || [ $OPT_FETCHSOURCE == "1" ] ; then
 		mkdir $TARGET/python-$PACKAGE
+	    fi
+
+	    if [ $OPT_FETCHSOURCE == "1" ] ; then
+		echo "Downloading source package from PyPI ..."
+		cd $TARGET/python-$PACKAGE
+		curl --silent -L -O $FETCHURL
+		cd $OLDPWD
 	    fi
 
 	    if [ $OPT_SPECGEN == "1" ] ; then
