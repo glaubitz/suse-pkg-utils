@@ -36,6 +36,7 @@ function usage() {
      -h             show this help message
      -i             print package information
      -l             generate LICENSE files for RPM
+     -n             include namespace files (excluded by default)
      -p             specify package to work with
      -r             relax version dependencies (== -> >=)
      -s             generate spec files for RPM
@@ -48,6 +49,7 @@ EOF
 
 OPT_LICENSEGEN=0
 OPT_INFO=0
+OPT_NAMESPACEFILES=1
 OPT_PACKAGE="azure*"
 OPT_RELAX=0
 OPT_SPECGEN=0
@@ -55,12 +57,13 @@ OPT_VERBOSE=0
 OPT_ZIPGEN=0
 
 REMOVE_ARGS=0
-while getopts "d:hilp:rsvz" opt ; do
+while getopts "d:hilnp:rsvz" opt ; do
     case "$opt" in
 	d) OPT_AZURE_DIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
 	h) usage ;;
 	i) OPT_INFO="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	l) OPT_LICENSEGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
+	n) OPT_NAMESPACEFILES="0" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;; 
 	p) OPT_PACKAGE="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
 	r) OPT_RELAX="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	s) OPT_SPECGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
@@ -92,6 +95,10 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 	    DESCRIPTION=$(sed -n -r -e '/^This\sis\sthe/,/(^This\spackage\s\has\sbeen\stested|^All\spackages|^This\spackage\sprovides|^It\sprovides)/p' $PACKAGE/README.rst)
 	    SUMMARY=$(echo "$DESCRIPTION" | head -n1 | sed -e 's/.*\(Microsoft.*\)\./\1/g')
 	    REQUIRES=$(sed -n -r -e '/.*install_requires=.*/,/.*\],.*/p' $PACKAGE/setup.py | sed -n -r -e "s/.*[\x22,\x27]([A-Z,a-z,0-9,-]*)(\[[A-Z,a-z]*\])?(>=|==|~=)?([A-Z,a-z,0-9,\.]*)?[\x22,\x27],/\1 \3 \4/pg")
+
+	    if [ $OPT_NAMESPACEFILES == "1" ] ; then
+		NAMESPACEFILES=$(cd $PACKAGE ; find . -name __init__.py -print0 | xargs -0 grep -l namespace | sed -e "s/^\.\///g")
+	    fi
 
 	    if [ $OPT_RELAX == "1" ] ; then
 		REQUIRES=$(echo "$REQUIRES" | sed -e 's/==/>=/g')
@@ -182,6 +189,14 @@ install -m 644 %{SOURCE1} %{_builddir}/$PACKAGE-%{version}
 %files %{python_files}
 %defattr(-,root,root,-)
 %doc LICENSE.txt README.rst
+EOF
+		if [ $OPT_NAMESPACEFILES == "1" ] ; then
+		    for i in $NAMESPACEFILES ; do
+			echo %exclude %{python2_sitelib}/$i | sed -e 's/\.py/\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo %exclude %{python3_sitelib}/$i | sed -e 's/__init__\.py/__pycache__\/__init__\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		    done
+		fi
+		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
 %{python_sitelib}/*
 
 %changelog
