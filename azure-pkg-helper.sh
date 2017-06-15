@@ -39,6 +39,7 @@ function usage() {
      -l             generate LICENSE files for RPM
      -n             include namespace files (excluded by default)
      -p             specify package to work with
+     -q             specify directory with additional patches
      -r             relax version dependencies (== -> >=)
      -s             generate spec files for RPM
      -v             verbose
@@ -53,6 +54,7 @@ OPT_LICENSEGEN=0
 OPT_INFO=0
 OPT_NAMESPACEFILES=1
 OPT_PACKAGE="azure*"
+OPT_PATCHDIR=""
 OPT_RELAX=0
 OPT_SPECGEN=0
 OPT_VERBOSE=0
@@ -61,7 +63,7 @@ OPT_ZIPGEN=0
 PIPY_HOSTING_SRC=https://files.pythonhosted.org/packages/source
 
 REMOVE_ARGS=0
-while getopts "d:fhilnp:rsvz" opt ; do
+while getopts "d:fhilnp:q:rsvz" opt ; do
     case "$opt" in
 	d) OPT_AZURE_DIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
 	f) OPT_FETCHSOURCE="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
@@ -70,6 +72,7 @@ while getopts "d:fhilnp:rsvz" opt ; do
 	l) OPT_LICENSEGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	n) OPT_NAMESPACEFILES="0" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;; 
 	p) OPT_PACKAGE="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
+	q) OPT_PATCHDIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
 	r) OPT_RELAX="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	s) OPT_SPECGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	v) OPT_VERBOSE="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
@@ -173,6 +176,16 @@ Group:		Development/Languages/Python
 Url:		https://github.com/Azure/azure-sdk-for-python
 Source:		$SOURCEURL
 Source1:	LICENSE.txt
+EOF
+		PATCHCOUNT=0
+		if [ -n "$OPT_PATCHDIR" ] ; then
+		    for i in $OPT_PATCHDIR/*.patch ; do
+			[ -f $i ] || continue
+			PATCHCOUNT=$[PATCHCOUNT+1]
+			echo -e "Patch$PATCHCOUNT:\t\t"$(basename $i) >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		    done
+		fi
+		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
 BuildRequires:	%{python_module devel}
 BuildRequires:	%{python_module setuptools}
 BuildRequires:	python-rpm-macros
@@ -200,6 +213,11 @@ $DESCRIPTION
 
 %prep
 %setup -q -n $PACKAGE-%{version}
+EOF
+		for ((i=1; i<=PATCHCOUNT; i++)); do
+		    echo -e "%patch$i -p1" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		done
+		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
 
 %build
 install -m 644 %{SOURCE1} %{_builddir}/$PACKAGE-%{version}
