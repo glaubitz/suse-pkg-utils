@@ -167,44 +167,44 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 #
 
 %{?!python_module:%define python_module() python-%{**} python3-%{**}}
-Name:		python-$PACKAGE
-Version:	$VERSION
-Release:	0
-Summary:	$SUMMARY
-License:	$LICENSE
-Group:		Development/Languages/Python
-Url:		https://github.com/Azure/azure-sdk-for-python
-Source:		$SOURCEURL
-Source1:	LICENSE.txt
+Name:           python-$PACKAGE
+Version:        $VERSION
+Release:        0
+Summary:        $SUMMARY
+License:        $LICENSE
+Group:          Development/Languages/Python
+Url:            https://github.com/Azure/azure-sdk-for-python
+Source:         $SOURCEURL
+Source1:        LICENSE.txt
 EOF
 		PATCHCOUNT=0
 		if [ -n "$OPT_PATCHDIR" ] ; then
 		    for i in $OPT_PATCHDIR/*.patch ; do
 			[ -f $i ] || continue
 			PATCHCOUNT=$[PATCHCOUNT+1]
-			echo -e "Patch$PATCHCOUNT:\t\t"$(basename $i) >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo -e "Patch$PATCHCOUNT:         "$(basename $i) >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 		    done
 		fi
 		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
-BuildRequires:	%{python_module devel}
-BuildRequires:	%{python_module setuptools}
-BuildRequires:	python-rpm-macros
-BuildRequires:	unzip
+BuildRequires:  %{python_module devel}
+BuildRequires:  %{python_module setuptools}
+BuildRequires:  python-rpm-macros
+BuildRequires:  unzip
 EOF
 		IFS=$'\n'
 		for i in $REQUIRES ; do
 		    if [ -n $(echo "$i" |grep -e '.*~=.*') ] ; then
 			CONFLICT_VERSION=$[$(echo $i | sed -e 's/.*~=\s\([0-9]*\)\..*/\1/g') + 1].0.0
-			echo -e "Requires:\tpython-$i" | sed -e 's/~=/>=/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
-			echo -e "Conflicts:\tpython-$i" | sed -r -e "s/~=\ [0-9,\.]*/>= $CONFLICT_VERSION/g" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo -e "Requires:       python-$i" | sed -e 's/~=/>=/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo -e "Conflicts:      python-$i" | sed -r -e "s/~=\ [0-9,\.]*/>= $CONFLICT_VERSION/g" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 		    else
-			echo -e "Requires:\tpython-$i" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo -e "Requires:       python-$i" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 		    fi
 		done
 		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
-Conflicts:	python-azure-sdk <= 2.0.0
+Conflicts:      python-azure-sdk <= 2.0.0
 
-BuildArch:	noarch
+BuildArch:      noarch
 
 %python_subpackages
 
