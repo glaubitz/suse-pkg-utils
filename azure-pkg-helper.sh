@@ -194,9 +194,9 @@ EOF
 		IFS=$'\n'
 		for i in $REQUIRES ; do
 		    if [ -n "$(echo "$i" |grep -e '.*~=.*')" ] ; then
-			CONFLICT_VERSION=$[$(echo $i | sed -e 's/.*~=\s\([0-9]*\)\..*/\1/g') + 1].0.0
+			UPPER_REQUIRES_VERSION=$[$(echo $i | sed -e 's/.*~=\s\([0-9]*\)\..*/\1/g') + 1].0.0
 			echo -e "Requires:       python-$i" | sed -e 's/~=/>=/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
-			echo -e "Conflicts:      python-$i" | sed -r -e "s/~=\ [0-9,\.]*/>= $CONFLICT_VERSION/g" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo -e "Requires:       python-$i" | sed -r -e "s/~=\ [0-9,\.]*/< $UPPER_REQUIRES_VERSION/g" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 		    else
 			echo -e "Requires:       python-$i" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 		    fi
