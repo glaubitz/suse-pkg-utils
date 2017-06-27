@@ -100,6 +100,19 @@ if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
 		VERSION=$(grep version\= $SETUPFILE | sed -e "s/.*version\s*\=\s*'\([A-Z,a-z,0-9,\.]*\)'.*/\1/g")
 	    fi
 	    LICENSE=$(grep license= $SETUPFILE |sed -e "s/.*license\='\(.*\)',/\1/g")
+
+	    case $LICENSE in
+		MIT*)
+		    LICENSE="MIT"
+		    ;;
+		Apache*2.0*)
+		    LICENSE="Apache-2.0"
+		    ;;
+		*)
+		    echo "Error: Unknown license. Exiting."
+		    ;;
+	    esac
+
 	    DESCRIPTION=$(sed -n -r -e '/^This\sis\sthe/,/(^This\spackage\s\has\sbeen\stested|^All\spackages|^This\spackage\sprovides|^It\sprovides)/p' $PACKAGE/README.rst)
 	    SUMMARY=$(echo "$DESCRIPTION" | head -n1 | sed -e 's/.*\(Microsoft.*\)\./\1/g')
 	    REQUIRES=$(sed -n -r -e '/.*install_requires=.*/,/.*\],.*/p' $PACKAGE/setup.py | sed -n -r -e "s/.*[\x22,\x27]([A-Z,a-z,0-9,-]*)(\[[A-Z,a-z]*\])?(>=|==|~=)?([A-Z,a-z,0-9,\.]*)?[\x22,\x27],/\1 \3 \4/pg")
@@ -246,7 +259,7 @@ EOF
 	    if [ $OPT_LICENSEGEN == "1" ] ; then
 		echo "Writing LICENSE.txt for file $PACKAGE ..."
 		case $LICENSE in
-		    MIT*)
+		    MIT)
 			cat > $TARGET/python-$PACKAGE/LICENSE.txt <<EOF
 The MIT License (MIT)
 
@@ -271,7 +284,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 EOF
 			;;
-		    Apache*2.0*)
+		    Apache-2.0)
 			cat > $TARGET/python-$PACKAGE/LICENSE.txt <<EOF
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 
