@@ -81,9 +81,9 @@ while getopts "d:fhilnp:q:rsvz" opt ; do
 done
 shift "$REMOVE_ARGS"
 
-if [ $OPT_AZURE_DIR ] && [ -d $OPT_AZURE_DIR ] ; then
+if [ "$OPT_AZURE_DIR" ] && [ -d "$OPT_AZURE_DIR" ] ; then
 
-    cd $OPT_AZURE_DIR
+    cd "$OPT_AZURE_DIR"
 
     if [ $OPT_ZIPGEN == "1" ] || [ $OPT_SPECGEN == "1" ] ; then
 	TARGET=$(mktemp -d)
