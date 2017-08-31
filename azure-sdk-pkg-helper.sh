@@ -30,7 +30,7 @@
 function usage() {
   cat <<EOF
 
-    azure-pkg-helper.sh [opt]
+    azure-sdk-pkg-helper.sh [opt]
 
      -d             path to Azure SDK for Python (required)
      -f             fetch source package from PyPI
