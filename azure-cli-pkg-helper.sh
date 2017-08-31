@@ -125,15 +125,15 @@ if [ "$OPT_AZURE_DIR" ] && [ -d "$OPT_AZURE_DIR" ] ; then
 		REQUIRES=$(echo "$REQUIRES" | sed -e 's/==/>=/g')
 	    fi
 
-	    # if curl --output /dev/null --silent --head --fail $PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.zip ; then
-	    # 	SOURCEURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-%{version}.zip"
-	    # 	FETCHURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.zip"
-	    # elif curl --output /dev/null --silent --head --fail $PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.tar.gz ; then
-	    # 	SOURCEURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-%{version}.tar.gz"
-	    # 	FETCHURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.tar.gz"
-	    # else
-	    # 	echo "Error: Package $PACKAGE-$VERSION doesn't seem to exist on PyPI."
-	    # fi
+	    if curl --output /dev/null --silent --head --fail $PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.zip ; then
+		SOURCEURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-%{version}.zip"
+		FETCHURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.zip"
+	    elif curl --output /dev/null --silent --head --fail $PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.tar.gz ; then
+		SOURCEURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-%{version}.tar.gz"
+		FETCHURL="$PIPY_HOSTING_SRC/${PACKAGE:0:1}/$PACKAGE/$PACKAGE-$VERSION.tar.gz"
+	    else
+		echo "Error: Package $PACKAGE-$VERSION doesn't seem to exist on PyPI."
+	    fi
 
 	    if [ $OPT_INFO == "1" ] ; then
 		echo -e "Package:\t"$PACKAGE
