@@ -94,10 +94,10 @@ if [ "$OPT_AZURE_DIR" ] && [ -d "$OPT_AZURE_DIR" ] ; then
 	    VERSIONFILE=$(find $PACKAGE -name version.py | sort | tail -n1)
 	    SETUPFILE=$PACKAGE/setup.py
 	    if [ $VERSIONFILE ] ; then
-		VERSION=$(grep -w 'VERSION\s*\=\|version\s*\=' $VERSIONFILE | sed -e 's/.*[VERSION,version]\s*\=\s*\"\([A-Z,a-z,0-9,\.,\+]*\)\"/\1/g')
+		VERSION=$(grep -w 'VERSION\s*\=\|version\s*\=' $VERSIONFILE | sed -e 's/.*[VERSION,version]\s*\=\s*\"\([A-Z,a-z,0-9,\.]*\)\(\+dev\)\"/\1/g')
 	    else
 		VERSIONFILE=$SETUPFILE
-		VERSION=$(grep -w 'VERSION\s*\=\|version\s*\=' $VERSIONFILE | sed -e 's/.*[VERSION,version]\s*\=\s*\"\([A-Z,a-z,0-9,\.,\+]*\)\"/\1/g')
+		VERSION=$(grep -w 'VERSION\s*\=\|version\s*\=' $VERSIONFILE | sed -e 's/.*[VERSION,version]\s*\=\s*\"\([A-Z,a-z,0-9,\.]*\)\(\+dev\)\"/\1/g')
 	    fi
 	    LICENSE=$(grep license= $SETUPFILE |sed -e "s/.*license\='\(.*\)',/\1/g")
 
