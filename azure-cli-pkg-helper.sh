@@ -149,21 +149,21 @@ if [ "$OPT_AZURE_DIR" ] && [ -d "$OPT_AZURE_DIR" ] ; then
 	    fi
 
 	    if [ $OPT_ZIPGEN == "1" ] || [ $OPT_SPECGEN == "1" ] || [ $OPT_FETCHSOURCE == "1" ] ; then
-		mkdir $TARGET/python-$PACKAGE
+		mkdir $TARGET/$PACKAGE
 	    fi
 
 	    if [ $OPT_FETCHSOURCE == "1" ] ; then
 		echo "Downloading source package from PyPI ..."
-		cd $TARGET/python-$PACKAGE
+		cd $TARGET/$PACKAGE
 		curl --silent -L -O $FETCHURL
 		cd $OLDPWD
 	    fi
 
 	    if [ $OPT_SPECGEN == "1" ] ; then
-		echo "Writing python-$PACKAGE.spec ..."
-		cat > $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
+		echo "Writing $PACKAGE.spec ..."
+		cat > $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 #
-# spec file for package python-$PACKAGE
+# spec file for package $PACKAGE
 #
 # Copyright (c) 2017 SUSE LINUX GmbH, Nuernberg, Germany.
 #
@@ -179,7 +179,7 @@ if [ "$OPT_AZURE_DIR" ] && [ -d "$OPT_AZURE_DIR" ] ; then
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-Name:           python-$PACKAGE
+Name:           $PACKAGE
 Version:        $VERSION
 Release:        0
 Summary:        $SUMMARY
@@ -194,10 +194,10 @@ EOF
 		    for i in $OPT_PATCHDIR/*.patch ; do
 			[ -f $i ] || continue
 			PATCHCOUNT=$[PATCHCOUNT+1]
-			echo -e "Patch$PATCHCOUNT:         "$(basename $i) >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo -e "Patch$PATCHCOUNT:         "$(basename $i) >> $TARGET/$PACKAGE/$PACKAGE.spec
 		    done
 		fi
-		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
+		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  unzip
@@ -206,13 +206,13 @@ EOF
 		for i in $REQUIRES ; do
 		    if [ -n "$(echo "$i" |grep -e '.*~=.*')" ] ; then
 			UPPER_REQUIRES_VERSION=$[$(echo $i | sed -e 's/.*~=\s\([0-9]*\)\..*/\1/g') + 1].0.0
-			echo -e "Requires:       python-$i" | sed -e 's/~=/>=/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
-			echo -e "Requires:       python-$i" | sed -r -e "s/~=\ [0-9,\.]*/< $UPPER_REQUIRES_VERSION/g" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo -e "Requires:       python-$i" | sed -e 's/~=/>=/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
+			echo -e "Requires:       python-$i" | sed -r -e "s/~=\ [0-9,\.]*/< $UPPER_REQUIRES_VERSION/g" >> $TARGET/$PACKAGE/$PACKAGE.spec
 		    else
-			echo -e "Requires:       python-$i" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo -e "Requires:       python-$i" >> $TARGET/$PACKAGE/$PACKAGE.spec
 		    fi
 		done
-		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
+		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 Conflicts:      azure-cli
 
 BuildArch:      noarch
@@ -224,9 +224,9 @@ $DESCRIPTION
 %setup -q -n $PACKAGE-%{version}
 EOF
 		for ((i=1; i<=PATCHCOUNT; i++)); do
-		    echo -e "%patch$i -p1" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		    echo -e "%patch$i -p1" >> $TARGET/$PACKAGE/$PACKAGE.spec
 		done
-		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
+		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 
 %build
 install -m 644 %{SOURCE1} %{_builddir}/$PACKAGE-%{version}
@@ -241,10 +241,10 @@ python3 setup.py install --root=%{buildroot} --prefix=%{_prefix} --install-lib=%
 EOF
 		if [ $OPT_NAMESPACEFILES == "1" ] ; then
 		    for i in $NAMESPACEFILES ; do
-			echo %exclude %{python3_sitelib}/$i | sed -e 's/__init__\.py/__pycache__\/__init__\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo %exclude %{python3_sitelib}/$i | sed -e 's/__init__\.py/__pycache__\/__init__\.\*py\*/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
 		    done
 		fi
-		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
+		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 %{python3_sitelib}/*
 
 %changelog
@@ -255,7 +255,7 @@ EOF
 		echo "Writing LICENSE.txt for file $PACKAGE ..."
 		case $LICENSE in
 		    MIT)
-			cat > $TARGET/python-$PACKAGE/LICENSE.txt <<EOF
+			cat > $TARGET/$PACKAGE/LICENSE.txt <<EOF
 The MIT License (MIT)
 
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
@@ -280,7 +280,7 @@ SOFTWARE.
 EOF
 			;;
 		    Apache-2.0)
-			cat > $TARGET/python-$PACKAGE/LICENSE.txt <<EOF
+			cat > $TARGET/$PACKAGE/LICENSE.txt <<EOF
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -304,7 +304,7 @@ EOF
 	    if [ $OPT_ZIPGEN == "1" ] ; then
 		echo "Generating $PACKAGE-$VERSION.zip ..."
 		ln -s $PACKAGE $PACKAGE-$VERSION
-		zip -q -r $TARGET/python-$PACKAGE/$PACKAGE-$VERSION.zip $PACKAGE-$VERSION
+		zip -q -r $TARGET/$PACKAGE/$PACKAGE-$VERSION.zip $PACKAGE-$VERSION
 	    fi
 	fi
     done
