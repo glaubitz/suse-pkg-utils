@@ -179,7 +179,6 @@ if [ "$OPT_AZURE_DIR" ] && [ -d "$OPT_AZURE_DIR" ] ; then
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-%{?!python_module:%define python_module() python-%{**} python3-%{**}}
 Name:           python-$PACKAGE
 Version:        $VERSION
 Release:        0
@@ -199,9 +198,8 @@ EOF
 		    done
 		fi
 		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
-BuildRequires:  %{python_module devel}
-BuildRequires:  %{python_module setuptools}
-BuildRequires:  python-rpm-macros
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
 BuildRequires:  unzip
 EOF
 		IFS=$'\n'
@@ -219,8 +217,6 @@ Conflicts:      azure-cli
 
 BuildArch:      noarch
 
-%python_subpackages
-
 %description
 $DESCRIPTION
 
@@ -234,23 +230,22 @@ EOF
 
 %build
 install -m 644 %{SOURCE1} %{_builddir}/$PACKAGE-%{version}
-%python_build
+python3 setup.py build
 
 %install
-%python_install
+python3 setup.py install --root=%{buildroot} --prefix=%{_prefix} --install-lib=%{python3_sitelib}
 
-%files %{python_files}
+%files
 %defattr(-,root,root,-)
 %doc LICENSE.txt README.rst
 EOF
 		if [ $OPT_NAMESPACEFILES == "1" ] ; then
 		    for i in $NAMESPACEFILES ; do
-			echo %exclude %{python2_sitelib}/$i | sed -e 's/\.py/\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 			echo %exclude %{python3_sitelib}/$i | sed -e 's/__init__\.py/__pycache__\/__init__\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 		    done
 		fi
 		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
-%{python_sitelib}/*
+%{python3_sitelib}/*
 
 %changelog
 EOF
