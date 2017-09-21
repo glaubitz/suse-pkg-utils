@@ -184,7 +184,7 @@ Version:        $VERSION
 Release:        0
 Summary:        $SUMMARY
 License:        $LICENSE
-Group:          Development/Languages/Python
+Group:          System/Management
 Url:            https://github.com/Azure/azure-cli
 Source:         $SOURCEURL
 Source1:        LICENSE.txt
