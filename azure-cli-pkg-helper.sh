@@ -204,12 +204,17 @@ BuildRequires:  unzip
 EOF
 		IFS=$'\n'
 		for i in $REQUIRES ; do
+		    if [ -n "$(echo "$i" | grep -e 'azure-cli-')" ] ; then
+			unset PKG_PREFIX
+		    else
+			PKG_PREFIX="python-"
+		    fi
 		    if [ -n "$(echo "$i" |grep -e '.*~=.*')" ] ; then
 			UPPER_REQUIRES_VERSION=$[$(echo $i | sed -e 's/.*~=\s\([0-9]*\)\..*/\1/g') + 1].0.0
-			echo -e "Requires:       python-$i" | sed -e 's/~=/>=/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
-			echo -e "Requires:       python-$i" | sed -r -e "s/~=\ [0-9,\.]*/< $UPPER_REQUIRES_VERSION/g" >> $TARGET/$PACKAGE/$PACKAGE.spec
+			echo -e "Requires:       $PKG_PREFIX$i" | sed -e 's/~=/>=/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
+			echo -e "Requires:       $PKG_PREFIX$i" | sed -r -e "s/~=\ [0-9,\.]*/< $UPPER_REQUIRES_VERSION/g" >> $TARGET/$PACKAGE/$PACKAGE.spec
 		    else
-			echo -e "Requires:       python-$i" >> $TARGET/$PACKAGE/$PACKAGE.spec
+			echo -e "Requires:       $PKG_PREFIX$i" >> $TARGET/$PACKAGE/$PACKAGE.spec
 		    fi
 		done
 		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
