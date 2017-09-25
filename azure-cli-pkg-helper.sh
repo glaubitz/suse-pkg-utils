@@ -37,7 +37,7 @@ function usage() {
      -h             show this help message
      -i             print package information
      -l             generate LICENSE files for RPM
-     -n             include namespace files (excluded by default)
+     -n             include namespace files instead using of nspkg packages
      -p             specify package to work with
      -q             specify directory with additional patches
      -r             relax version dependencies (== -> >=)
@@ -119,6 +119,7 @@ if [ "$OPT_AZURE_DIR" ] && [ -d "$OPT_AZURE_DIR" ] ; then
 
 	    if [ $OPT_NAMESPACEFILES == "1" ] ; then
 		NAMESPACEFILES=$(cd $PACKAGE ; find . -name __init__.py -print0 | xargs -0 grep -l namespace | sed -e "s/^\.\///g")
+		NAMESPACEPKGS=$(echo "$NAMESPACEFILES" | sed -e 's/\(^.*\)\/__init__.py/\1-nspkg/g' | sed -e 's/[\/,_]/-/g')
 	    fi
 
 	    if [ $OPT_RELAX == "1" ] ; then
@@ -203,7 +204,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  unzip
 EOF
 		IFS=$'\n'
-		for i in $REQUIRES ; do
+		for i in $NAMESPACEPKGS $REQUIRES ; do
 		    if [ -n "$(echo "$i" | grep -e 'azure-cli-')" ] ; then
 			unset PKG_PREFIX
 		    else
