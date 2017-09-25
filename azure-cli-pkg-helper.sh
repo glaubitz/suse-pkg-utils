@@ -208,7 +208,7 @@ EOF
 		    if [ -n "$(echo "$i" | grep -e 'azure-cli-')" ] ; then
 			unset PKG_PREFIX
 		    else
-			PKG_PREFIX="python-"
+			PKG_PREFIX="python3-"
 		    fi
 		    if [ -n "$(echo "$i" |grep -e '.*~=.*')" ] ; then
 			UPPER_REQUIRES_VERSION=$[$(echo $i | sed -e 's/.*~=\s\([0-9]*\)\..*/\1/g') + 1].0.0
