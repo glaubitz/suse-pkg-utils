@@ -219,7 +219,7 @@ EOF
 		    fi
 		done
 		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
-Conflicts:      azure-cli
+Conflicts:      azure-cli < 2.0.0
 
 BuildArch:      noarch
 
