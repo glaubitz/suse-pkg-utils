@@ -249,19 +249,20 @@ install -m 644 %{SOURCE1} %{_builddir}/$PACKAGE-%{version}
 
 %install
 %python_install
+%{python_expand # delete common files
+EOF
+		if [ $OPT_NAMESPACEFILES == "1" ] ; then
+		    for i in $NAMESPACEFILES ; do
+			echo rm -rf %{buildroot}%{\$python_sitelib}/$i | sed -e 's/\.py/\.\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo rm -rf %{buildroot}%{\$python_sitelib}/$i | sed -e 's/__init__\.py/__pycache__/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		    done
+		fi
+		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
+}
 
 %files %{python_files}
 %defattr(-,root,root,-)
 %doc LICENSE.txt README.rst
-EOF
-		if [ $OPT_NAMESPACEFILES == "1" ] ; then
-		    for i in $NAMESPACEFILES ; do
-			echo %exclude %{python2_sitelib}/$i | sed -e 's/\.py/\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
-			echo %exclude %{python3_sitelib}/$i | sed -e 's/\.py/\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
-			echo %exclude %{python3_sitelib}/$i | sed -e 's/__init__\.py/__pycache__\/__init__\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
-		    done
-		fi
-		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
 %{python_sitelib}/*
 
 %changelog
