@@ -255,18 +255,18 @@ python3 setup.py build
 
 %install
 python3 setup.py install --root=%{buildroot} --prefix=%{_prefix} --install-lib=%{python3_sitelib}
+EOF
+		if [ $OPT_NAMESPACEFILES == "1" ] ; then
+		    for i in $NAMESPACEFILES ; do
+			echo rm -rf %{buildroot}%{python3_sitelib}/$i | sed -e 's/\.py/\.\*/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
+			echo rm -rf %{buildroot}%{python3_sitelib}/$i | sed -e 's/__init__\.py/__pycache__/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
+		    done
+		fi
+		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 
 %files
 %defattr(-,root,root,-)
 %doc LICENSE.txt README.rst
-EOF
-		if [ $OPT_NAMESPACEFILES == "1" ] ; then
-		    for i in $NAMESPACEFILES ; do
-			echo %exclude %{python3_sitelib}/$i | sed -e 's/\.py/\.\*py\*/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
-			echo %exclude %{python3_sitelib}/$i | sed -e 's/__init__\.py/__pycache__\/__init__\.\*py\*/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
-		    done
-		fi
-		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 %{python3_sitelib}/*
 
 %changelog
