@@ -205,6 +205,20 @@ BuildRequires:  python3-setuptools
 BuildRequires:  unzip
 EOF
 		IFS=$'\n'
+		for i in $NAMESPACEPKGS ; do
+		    if [ -n "$(echo "$i" | grep -e 'azure-cli-')" ] ; then
+			unset PKG_PREFIX
+		    else
+			PKG_PREFIX="python3-"
+		    fi
+		    if [ -n "$(echo "$i" |grep -e '.*~=.*')" ] ; then
+			UPPER_REQUIRES_VERSION=$[$(echo $i | sed -e 's/.*~=\s\([0-9]*\)\..*/\1/g') + 1].0.0
+			echo -e "BuildRequires:  $PKG_PREFIX$i" | sed -e 's/~=/>=/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
+			echo -e "BuildRequires:  $PKG_PREFIX$i" | sed -r -e "s/~=\ [0-9,\.]*/< $UPPER_REQUIRES_VERSION/g" >> $TARGET/$PACKAGE/$PACKAGE.spec
+		    else
+			echo -e "BuildRequires:  $PKG_PREFIX$i" >> $TARGET/$PACKAGE/$PACKAGE.spec
+		    fi
+		done
 		for i in $NAMESPACEPKGS $REQUIRES ; do
 		    if [ -n "$(echo "$i" | grep -e 'azure-cli-')" ] ; then
 			unset PKG_PREFIX
