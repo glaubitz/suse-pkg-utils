@@ -207,6 +207,15 @@ BuildRequires:  python-rpm-macros
 BuildRequires:  unzip
 EOF
 		IFS=$'\n'
+		for i in $NAMESPACEPKGS ; do
+		    if [ -n "$(echo "$i" |grep -e '.*~=.*')" ] ; then
+			UPPER_REQUIRES_VERSION=$[$(echo $i | sed -e 's/.*~=\s\([0-9]*\)\..*/\1/g') + 1].0.0
+			echo -e "BuildRequires:  %{python_module $i}" | sed -e 's/~=/>=/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo -e "BuildRequires:  %{python_module $i}" | sed -r -e "s/~=\ [0-9,\.]*/< $UPPER_REQUIRES_VERSION/g" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		    else
+			echo -e "BuildRequires:  %{python_module $i}" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		    fi
+		done
 		for i in $NAMESPACEPKGS $REQUIRES ; do
 		    if [ -n "$(echo "$i" |grep -e '.*~=.*')" ] ; then
 			UPPER_REQUIRES_VERSION=$[$(echo $i | sed -e 's/.*~=\s\([0-9]*\)\..*/\1/g') + 1].0.0
