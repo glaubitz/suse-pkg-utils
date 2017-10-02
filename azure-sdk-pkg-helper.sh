@@ -247,6 +247,7 @@ EOF
 		if [ $OPT_NAMESPACEFILES == "1" ] ; then
 		    for i in $NAMESPACEFILES ; do
 			echo %exclude %{python2_sitelib}/$i | sed -e 's/\.py/\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+			echo %exclude %{python3_sitelib}/$i | sed -e 's/\.py/\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 			echo %exclude %{python3_sitelib}/$i | sed -e 's/__init__\.py/__pycache__\/__init__\.\*py\*/g' >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 		    done
 		fi
