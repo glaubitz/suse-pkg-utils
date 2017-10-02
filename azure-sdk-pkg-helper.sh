@@ -118,7 +118,8 @@ if [ "$OPT_AZURE_DIR" ] && [ -d "$OPT_AZURE_DIR" ] ; then
 	    REQUIRES=$(sed -n -r -e '/.*install_requires=.*/,/.*\],.*/p' $PACKAGE/setup.py | sed -n -r -e "s/.*[\x22,\x27]([A-Z,a-z,0-9,-]*)(\[[A-Z,a-z]*\])?(>=|==|~=)?([A-Z,a-z,0-9,\.]*)?[\x22,\x27],/\1 \3 \4/pg")
 
 	    if [ $OPT_NAMESPACEFILES == "1" ] ; then
-		NAMESPACEFILES=$(cd $PACKAGE ; find . -name __init__.py -print0 | xargs -0 grep -l namespace | sed -e "s/^\.\///g")
+		EXCLUDEPATH="$(echo $PACKAGE | sed -e 's/\-/\//g')"
+		NAMESPACEFILES=$(cd $PACKAGE ; find -path ./$EXCLUDEPATH -prune -false -o -name __init__.py -print0 | xargs -0 grep -l namespace | sed -e "s/^\.\///g")
 		NAMESPACEPKGS=$(echo "$NAMESPACEFILES" | sed -e 's/\(^.*\)\/__init__.py/\1-nspkg/g' | sed -e 's/[\/,_]/-/g')
 	    fi
 
