@@ -247,6 +247,7 @@ python3 setup.py install --root=%{buildroot} --prefix=%{_prefix} --install-lib=%
 EOF
 		if [ $OPT_NAMESPACEFILES == "1" ] ; then
 		    for i in $NAMESPACEFILES ; do
+			echo %exclude %{python3_sitelib}/$i | sed -e 's/\.py/\.\*py\*/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
 			echo %exclude %{python3_sitelib}/$i | sed -e 's/__init__\.py/__pycache__\/__init__\.\*py\*/g' >> $TARGET/$PACKAGE/$PACKAGE.spec
 		    done
 		fi
