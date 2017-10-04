@@ -263,8 +263,11 @@ EOF
 %files %{python_files}
 %defattr(-,root,root,-)
 %doc LICENSE.txt README.rst
-%{python_sitelib}/*
+EOF
+		echo "%{python_sitelib}/""$(echo $PACKAGE | sed -e 's/-/\//g')" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
+		echo "%{python_sitelib}/""$(echo $PACKAGE | sed -e 's/-/_/g')""-*.egg-info" >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec
 
+		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
 %changelog
 EOF
 	    fi
