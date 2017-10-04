@@ -267,8 +267,18 @@ EOF
 %files
 %defattr(-,root,root,-)
 %doc LICENSE.txt README.rst
-%{python3_sitelib}/*
+EOF
+		case $PACKAGE in
+		    azure-cli|azure-cli-command-modules-nspkg|azure-cli-core|azure-cli-nspkg|azure-cli-testsdk)
+			echo "%{python3_sitelib}/""$(echo $PACKAGE | sed -e 's/-/\//g')" >> $TARGET/$PACKAGE/$PACKAGE.spec
+			;;
+		    *)
+			echo "%{python3_sitelib}/""$(echo $PACKAGE | sed -e 's/\(.*\)-\(.*\)-\(.*\)/\1-\2-command_modules-\3/g' | sed -e 's/-/\//g')" >> $TARGET/$PACKAGE/$PACKAGE.spec
+			;;
+		esac
+		echo "%{python3_sitelib}/""$(echo $PACKAGE | sed -e 's/-/_/g')""-*.egg-info" >> $TARGET/$PACKAGE/$PACKAGE.spec
 
+		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 %changelog
 EOF
 	    fi
