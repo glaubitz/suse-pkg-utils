@@ -266,7 +266,8 @@ EOF
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE.txt README.rst
+%doc README.rst
+%license LICENSE.txt
 EOF
 		case $PACKAGE in
 		    azure-cli|azure-cli-command-modules-nspkg|azure-cli-core|azure-cli-nspkg|azure-cli-testsdk)
