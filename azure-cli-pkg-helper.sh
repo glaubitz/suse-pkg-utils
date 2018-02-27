@@ -35,6 +35,7 @@ function usage() {
      -d             path to Azure CLI for Python (required)
      -f             fetch source package from PyPI
      -h             show this help message
+     -H             include HISTORY.rst file in %doc section
      -i             print package information
      -l             generate LICENSE files for RPM
      -n             include namespace files instead using of nspkg packages
@@ -51,6 +52,7 @@ EOF
 
 OPT_FETCHSOURCE=0
 OPT_LICENSEGEN=0
+OPT_HISTORYFILE=0
 OPT_INFO=0
 OPT_NAMESPACEFILES=1
 OPT_PACKAGE="azure*"
@@ -63,11 +65,12 @@ OPT_ZIPGEN=0
 PIPY_HOSTING_SRC=https://files.pythonhosted.org/packages/source
 
 REMOVE_ARGS=0
-while getopts "d:fhilnp:q:rsvz" opt ; do
+while getopts "d:fhHilnp:q:rsvz" opt ; do
     case "$opt" in
 	d) OPT_AZURE_DIR="$OPTARG" ; REMOVE_ARGS="$((REMOVE_ARGS + 2))" ;;
 	f) OPT_FETCHSOURCE="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	h) usage ;;
+	H) OPT_HISTORYFILE="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	i) OPT_INFO="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	l) OPT_LICENSEGEN="1" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;;
 	n) OPT_NAMESPACEFILES="0" ; REMOVE_ARGS="$((REMOVE_ARGS + 1))" ;; 
@@ -266,7 +269,14 @@ EOF
 
 %files
 %defattr(-,root,root,-)
-%doc README.rst
+EOF
+		if [ $OPT_HISTORYFILE == "1" ] ; then
+		    echo "%doc HISTORY.rst README.rst" >> $TARGET/$PACKAGE/$PACKAGE.spec
+		else
+		    echo "%doc README.rst" >> $TARGET/$PACKAGE/$PACKAGE.spec
+		fi
+
+		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 %license LICENSE.txt
 EOF
 		case $PACKAGE in
