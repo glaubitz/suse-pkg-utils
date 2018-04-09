@@ -118,7 +118,7 @@ if [ "$OPT_AZURE_DIR" ] && [ -d "$OPT_AZURE_DIR" ] ; then
 
 	    DESCRIPTION=$(sed -n -r -e '/^Microsoft\sAzure\s/,/^\+.*/p' $PACKAGE/README.rst | grep -ve '^[\+,\=]')
 	    SUMMARY=$(echo "$DESCRIPTION" | head -n1 | sed -e 's/.*\(Microsoft.*\)\./\1/g')
-	    REQUIRES=$(sed -n -r -e '/.*DEPENDENCIES\s*=.*/,/.*\]$/p' $PACKAGE/setup.py | sed -n -r -e "s/.*[\x22,\x27]([A-Z,a-z,x0-9,-]*)(\[[A-Z,a-z]*\])?(>=|==|~=)?([A-Z,a-z,0-9,\.]*)?[\x22,\x27],/\1 \3 \4/pg" | sed -e 's/[ \t]*$//')
+	    REQUIRES=$(sed -n -r -e '/.*DEPENDENCIES\s*=.*/,/.*\]$/p' $PACKAGE/setup.py | sed -n -r -e "s/.*[\x22,\x27]([A-Z,a-z,x0-9,-]*)(\[[A-Z,a-z]*\])?(>=|==|~=)?([A-Z,a-z,0-9,\.]*)?[\x22,\x27](\x2c|$)/\1 \3 \4/pg" | sed -e 's/[ \t]*$//')
 
 	    if [ $OPT_NAMESPACEFILES == "1" ] ; then
 		EXCLUDEPATH="$(echo $PACKAGE | sed -e 's/\-/\//g')"
