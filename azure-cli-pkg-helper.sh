@@ -203,6 +203,7 @@ EOF
 		    done
 		fi
 		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
+BuildRequires:  fdupes
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  unzip
@@ -258,6 +259,7 @@ python3 setup.py build
 
 %install
 python3 setup.py install --root=%{buildroot} --prefix=%{_prefix} --install-lib=%{python3_sitelib}
+%python_expand %fdupes %{buildroot}%{\$python_sitelib}
 EOF
 		if [ $OPT_NAMESPACEFILES == "1" ] ; then
 		    for i in $NAMESPACEFILES ; do
