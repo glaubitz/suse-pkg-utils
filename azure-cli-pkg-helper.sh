@@ -204,7 +204,6 @@ EOF
 		fi
 		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 BuildRequires:  fdupes
-BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  unzip
 EOF
