@@ -205,7 +205,6 @@ EOF
 		cat >> $TARGET/$PACKAGE/$PACKAGE.spec <<EOF
 BuildRequires:  fdupes
 BuildRequires:  python3-setuptools
-BuildRequires:  unzip
 EOF
 		IFS=$'\n'
 		for i in $NAMESPACEPKGS ; do
