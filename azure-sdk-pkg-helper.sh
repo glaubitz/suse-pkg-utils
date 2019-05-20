@@ -206,6 +206,7 @@ EOF
 		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
 BuildRequires:  %{python_module devel}
 BuildRequires:  %{python_module setuptools}
+BuildRequires:  fdupes
 BuildRequires:  python-rpm-macros
 BuildRequires:  unzip
 EOF
@@ -252,6 +253,7 @@ install -m 644 %{SOURCE1} %{_builddir}/$PACKAGE-%{version}
 
 %install
 %python_install
+%python_expand %fdupes %{buildroot}%{\$python_sitelib}
 %{python_expand # delete common files
 EOF
 		if [ $OPT_NAMESPACEFILES == "1" ] ; then
