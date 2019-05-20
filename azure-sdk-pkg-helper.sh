@@ -204,7 +204,6 @@ EOF
 		    done
 		fi
 		cat >> $TARGET/python-$PACKAGE/python-$PACKAGE.spec <<EOF
-BuildRequires:  %{python_module devel}
 BuildRequires:  %{python_module setuptools}
 BuildRequires:  fdupes
 BuildRequires:  python-rpm-macros
